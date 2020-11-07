@@ -1,0 +1,11 @@
+cc = g++
+OBJ = Testmain.o CThreadPool.o
+LIB = -lpthread
+main:$(OBJ)
+	$(cc) $(LIB) -o main $(OBJ)
+
+Testmain.o: Testmain.cpp
+	$(cc) $(LIB) -c Testmain.cpp
+CThreadPool.o: CThreadPool.cpp
+	$(cc) $(LIB) -c CThreadPool.cpp
+
