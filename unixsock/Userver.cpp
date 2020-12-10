@@ -8,21 +8,21 @@ void* handle(void* args){
 	Clientinfo  *cl = NULL;
 	CUserver * p = (CUserver *)args;
 	cout << "m_clientinfo size is " << p->m_clientinfo.size();
-	list<Clientinfo*>::iterator iter = p->m_clientinfo.begin();
 	
 	//请注意此处顺序容器erase用法
-	for(; iter != p->m_clientinfo.end(); ){
+	for(list<Clientinfo*>::iterator iter = p->m_clientinfo.begin(); iter != p->m_clientinfo.end(); iter++){
 		if(!((*iter)->used)){		
 			cl = (*iter);
 			pthread_mutex_lock(&mutex1);
 			cl->used = true;
 			//调用erase（）函数后，vector后面的元素会向前移位，形成新的容器，这样原来指向删除元素的迭代器（_Where）就失效了。
 			//在erase后，iter失效，并不是指向list的下一个元素，iter成了一个“野指针”。
+			//若还想使用p->m_clientinfo.erase(iter)，请务必避免“野指针”iter的再次使用，请使用break跳出循环，否则会导致段错误
 			iter = p->m_clientinfo.erase(iter);
+			//p->m_clientinfo.erase(iter);
 			pthread_mutex_unlock(&mutex1);
-			break;
-		}else
-			iter++;
+			break;//跳出循环，可避免iter变为野指针后的再次使用。
+		}
 	}
 	cout << "cl->sock" << cl->sock << endl;
 	if(cl->sock < 0){
